@@ -42,7 +42,7 @@ def load_characters():
         return characters
 
     except FileNotFoundError:
-        print("❌ characters.txt not found.")
+        print(" characters.txt not found.")
         return {}
 
 def save_characters(characters):
