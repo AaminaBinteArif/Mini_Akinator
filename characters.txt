@@ -80,3 +80,32 @@ pirate=false
 athletic=false
 royal=true
 
+Jade West
+pirate=false
+color_blue=true
+glasses=false
+color_purple=true
+villain_parent=false
+athletic=false
+tech_savvy=true
+royal=false
+magic=false
+hero=false
+fashionable=true
+'Attends hollywood arts'=true
+
+Robbie Shapiro
+glasses=true
+villain_parent=false
+pirate=false
+color_purple=false
+hero=false
+tech_savvy=true
+magic=false
+royal=false
+fashionable=false
+athletic=false
+color_blue=false
+'Attends hollywood arts'=true
+'have a puppet'=true
+

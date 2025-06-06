@@ -1,3 +1,5 @@
+import random
+
 FILENAME = "characters.txt"
 
 QUESTION_MAP = {
@@ -52,13 +54,25 @@ def save_characters(characters):
             file.write("\n")
     print("Character saved.")
 
-def ask_traits(known_traits):
+def ask_traits(known_traits, already_asked=None, max_questions=10):
     traits = {}
+    trait_list = list(known_traits)
+
+    if already_asked:
+        trait_list = [t for t in trait_list if t not in already_asked]
+
+    random.shuffle(trait_list)
+    to_ask = trait_list[:max_questions]
+
     print("\nAnswer yes or no:")
-    for trait in known_traits:
+    for trait in to_ask:
         question = QUESTION_MAP.get(trait, trait)
         answer = input(f"Is / Does the character {question}? (yes/no): ").strip().lower()
+        while answer not in ("yes", "no"):
+            print("Please answer 'yes' or 'no'.")
+            answer = input(f"Is / Does the character {question}? (yes/no): ").strip().lower()
         traits[trait] = answer == "yes"
+
     return traits
 
 def top_matches(user_traits, characters, top_n=2):
@@ -83,7 +97,7 @@ def add_additional_traits():
     answer = input().strip().lower()
     additional_traits = {}
     if answer == "yes":
-        print("Enter traits one by one in the format trait_name=true/false. Type 'done' when finished.")
+        print("Enter traits one by one in the format trait_name=true/false . Type 'done' when finished.")
         while True:
             line = input().strip()
             if line.lower() == "done":
@@ -108,36 +122,56 @@ def main():
         all_traits.update(traits.keys())
 
     print("\nWelcome to Mini Akinator!")
-    user_traits = ask_traits(all_traits)
+
+    # First round: ask 10 traits
+    user_traits = ask_traits(all_traits, max_questions=10)
 
     guesses = top_matches(user_traits, characters)
 
-    # Interactive guessing loop
     for i, (name, confidence, score, total) in enumerate(guesses):
         percent = round(confidence * 100)
         answer = input(f"\nIs your character {name}? ({percent}% match) (yes/no): ").strip().lower()
+        while answer not in ("yes", "no"):
+            print("Please answer 'yes' or 'no'.")
+            answer = input(f"Is your character {name}? ({percent}% match) (yes/no): ").strip().lower()
         if answer == "yes":
             print(f"\nYay! I guessed it right: {name}")
             return
-        elif answer != "no":
+
+    # Second round: ask remaining traits (up to 10 more)
+    user_traits.update(ask_traits(all_traits, already_asked=user_traits.keys(), max_questions=10))
+
+    # Second guess
+    guesses = top_matches(user_traits, characters)
+    for i, (name, confidence, score, total) in enumerate(guesses):
+        percent = round(confidence * 100)
+        answer = input(f"\nIs your character {name}? ({percent}% match) (yes/no): ").strip().lower()
+        while answer not in ("yes", "no"):
             print("Please answer 'yes' or 'no'.")
+            answer = input(f"Is your character {name}? ({percent}% match) (yes/no): ").strip().lower()
+        if answer == "yes":
+            print(f"\nAwesome! I got it after asking more questions: {name}")
             return
 
-    # If both guesses fail
+    # Still failed to guess
     print("\nI couldn't guess the character.")
     real_name = input("Who was it? ").strip()
 
-    # Ask if user wants to add additional traits
+    if real_name in characters:
+        print("This character already exists in the system. Updating their traits...")
+    else:
+        print("Adding a new character...")
+
+    # Ask for additional traits if needed
     additional_traits = add_additional_traits()
 
-    # Combine traits: user traits + additional traits (overwriting if needed)
+    # Combine all known traits
     combined_traits = user_traits.copy()
     combined_traits.update(additional_traits)
 
     characters[real_name] = combined_traits
     save_characters(characters)
-    print(f"Learned a new character: {real_name}")
+    print(f"Learned a character: {real_name}")
 
 if __name__ == "__main__":
     main()
-
