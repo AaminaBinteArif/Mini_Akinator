@@ -11,9 +11,10 @@ Mini Akinator is a simple Python game that tries to guess the character you’re
 - Written in Python.
 
 
-4. **Follow the prompts** and answer the questions to see if the program guesses your character!
+**Follow the prompts** and answer the questions to see if the program guesses your character!
 
-   **How It Works :**
+
+**How It Works :**
 
     The program uses a simple decision tree to guess characters based on your answers to yes/no questions. It compares your responses to the database of character traits stored in `characters.txt`.
 ````
